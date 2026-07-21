@@ -100,13 +100,8 @@
   .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start;}
   @media (max-width:860px){.about-grid{grid-template-columns:1fr;}}
   .about-photo{position:relative; border-radius:28px; overflow:hidden; padding:10px; background:var(--card); border:1px solid var(--border); box-shadow:0 16px 40px rgba(36,31,46,.10);}
-  .about-photo .photo-slides{position:relative; width:100%; height:420px; border-radius:20px; overflow:hidden;}
-  .about-photo .photo-slide{position:absolute; inset:0; opacity:0; transition:opacity 1s ease;}
-  .about-photo .photo-slide.active{opacity:1;}
-  .about-photo .photo-slide img{width:100%; height:100%; object-fit:cover; display:block;}
-  .about-dots{position:absolute; bottom:14px; left:0; right:0; display:flex; justify-content:center; gap:8px; z-index:2;}
-  .about-dots .dot{background:rgba(255,255,255,.55);}
-  .about-dots .dot.active{background:var(--primary);}
+  .about-photo .photo-frame{width:100%; height:420px; border-radius:20px; overflow:hidden;}
+  .about-photo .photo-frame img{width:100%; height:100%; object-fit:cover; object-position:center 20%; display:block;}
   .badge-tag{position:absolute; bottom:-16px; right:6px; font-family:'Space Grotesk',sans-serif; font-size:.78rem; padding:10px 16px; border-radius:99px; z-index:3; background:var(--ink); color:var(--bg); font-weight:600;}
 
   .stats-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:30px;}
@@ -223,8 +218,7 @@
     <div class="about-grid">
       <div>
         <div class="about-photo">
-          <div class="photo-slides" id="aboutSlides"></div>
-          <div class="about-dots" id="aboutDots"></div>
+          <div class="photo-frame"><img src="headshot.png" alt="Miller Pilongo headshot"></div>
           <div class="badge-tag">Open to work</div>
         </div>
         <div class="stats-grid">
@@ -360,13 +354,6 @@ const socialLinks = [
 
 const skillsData = ['Adobe Photoshop','Adobe Illustrator','Figma','InDesign','Procreate','After Effects','Brand Identity','Typography'];
 
-const aboutPhotos = [
-  { src:'headshot.jpeg', alt:'Miller Pilongo headshot' },
-  { src:'https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=900&auto=format&fit=crop', alt:'Designer sketching layout ideas' },
-  { src:'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=900&auto=format&fit=crop', alt:'Color swatches and design tools' },
-  { src:'https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=900&auto=format&fit=crop', alt:'Creative workspace with mood board' }
-];
-
 const experienceData = [
   { role:'Senior Graphic Designer', co:'NovaSoft Creative Studio', dur:'2023 - Present', desc:'Lead brand identity and campaign design for a roster of 15+ clients, overseeing everything from concept to final assets.', tech:['Illustrator','Photoshop','Figma'] },
   { role:'Graphic Designer', co:'BrightWave Digital', dur:'2021 - 2023', desc:'Designed marketing collateral, social campaigns, and web graphics, growing client engagement across platforms.', tech:['InDesign','After Effects','Procreate'] },
@@ -436,31 +423,6 @@ function typeLoop(){
   setTimeout(typeLoop, deleting ? 45 : 90);
 }
 typeLoop();
-
-const aboutSlidesEl = document.getElementById('aboutSlides');
-const aboutDotsEl = document.getElementById('aboutDots');
-aboutPhotos.forEach((p,i)=>{
-  const slide = document.createElement('div');
-  slide.className = 'photo-slide' + (i===0?' active':'');
-  slide.innerHTML = `<img src="${p.src}" alt="${p.alt}" loading="${i===0?'eager':'lazy'}">`;
-  aboutSlidesEl.appendChild(slide);
-
-  const dot = document.createElement('span');
-  dot.className = 'dot' + (i===0?' active':'');
-  dot.addEventListener('click', ()=>goToAboutSlide(i));
-  aboutDotsEl.appendChild(dot);
-});
-let aboutCurrent = 0;
-const aboutSlideEls = document.querySelectorAll('.photo-slide');
-const aboutDotEls = document.querySelectorAll('#aboutDots .dot');
-function goToAboutSlide(i){
-  aboutSlideEls[aboutCurrent].classList.remove('active');
-  aboutDotEls[aboutCurrent].classList.remove('active');
-  aboutCurrent = i;
-  aboutSlideEls[aboutCurrent].classList.add('active');
-  aboutDotEls[aboutCurrent].classList.add('active');
-}
-setInterval(()=>goToAboutSlide((aboutCurrent+1)%aboutSlideEls.length), 3800);
 
 function renderSocials(container){
   socialLinks.forEach(s=>{
