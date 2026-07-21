@@ -604,10 +604,11 @@ form.addEventListener('submit', (e)=>{
   btn.textContent = 'Sending...'; btn.disabled = true;
 
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    from_name: name,
+    name: name,
     from_email: email,
     subject: subject,
-    message: message
+    message: message,
+    time: new Date().toLocaleString('en-PH', { dateStyle: 'medium', timeStyle: 'short' })
   })
   .then(()=>{
     btn.textContent = 'Send Message'; btn.disabled = false;
