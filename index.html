@@ -272,7 +272,7 @@
       <h2>Let's Build Something</h2>
     </div>
     <div class="contact-grid">
-      <form class="form-card card" id="contactForm" action="contact.php" method="POST" novalidate>
+      <form class="form-card card" id="contactForm" novalidate>
         <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px; opacity:0;" aria-hidden="true">
         <div class="row2">
           <div class="field">
@@ -325,6 +325,23 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+/* ---------------- EMAILJS SETUP ----------------
+   1. Sign up free at https://www.emailjs.com
+   2. Add an Email Service (e.g. connect your Gmail) -> copy its SERVICE ID
+   3. Create an Email Template -> copy its TEMPLATE ID
+      Make sure the template's "To email" field is set to miller.pilongo7@gmail.com,
+      and the template body uses variables named: from_name, from_email, subject, message
+   4. Go to Account > General -> copy your PUBLIC KEY
+   5. Paste all three values into the constants below
+------------------------------------------------- */
+const EMAILJS_PUBLIC_KEY  = 'fpqZKN5QNDFAestbV';
+const EMAILJS_SERVICE_ID  = 'service_euvddgr';
+const EMAILJS_TEMPLATE_ID = 'template_3ikl1vj';
+
+emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+</script>
 <script>
 const slidesData = [
   { tag:'Graphic Designer', title:"Hi, I'm <em>Miller Pilongo</em>", desc:"I craft brand identities, layouts, and visuals that connect with people and tell a story.", cta:'View My Work', target:'#experience' },
@@ -556,6 +573,10 @@ function showToast(msg, ok=true){
 }
 form.addEventListener('submit', (e)=>{
   e.preventDefault();
+
+  // Honeypot check - if this hidden field got filled, silently drop it
+  if(form.website.value.trim() !== ''){ form.reset(); return; }
+
   let valid = true;
   const name = form.name.value.trim();
   const email = form.email.value.trim();
@@ -574,27 +595,29 @@ form.addEventListener('submit', (e)=>{
 
   if(!valid){ showToast('Please fix the highlighted fields', false); return; }
 
+  if(EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID'){
+    showToast('EmailJS is not set up yet - add your Service ID, Template ID and Public Key', false);
+    return;
+  }
+
   const btn = document.getElementById('sendBtn');
   btn.textContent = 'Sending...'; btn.disabled = true;
 
-  fetch(form.action, {
-    method: 'POST',
-    body: new FormData(form),
-    headers: { 'Accept': 'application/json' }
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    from_name: name,
+    from_email: email,
+    subject: subject,
+    message: message
   })
-  .then(res => res.json().then(data => ({ ok: res.ok, data })))
-  .then(({ ok, data }) => {
+  .then(()=>{
     btn.textContent = 'Send Message'; btn.disabled = false;
-    if(ok && data.success){
-      form.reset();
-      showToast(data.message || "Message sent, I'll get back to you soon!");
-    } else {
-      showToast(data.message || "Couldn't send, please try again or email me directly", false);
-    }
+    form.reset();
+    showToast("Message sent - I'll get back to you soon!");
   })
-  .catch(()=>{
+  .catch((err)=>{
+    console.error('EmailJS error:', err);
     btn.textContent = 'Send Message'; btn.disabled = false;
-    showToast("Couldn't send, check your connection and try again", false);
+    showToast("Couldn't send - please try again or email me directly", false);
   });
 });
 </script>
